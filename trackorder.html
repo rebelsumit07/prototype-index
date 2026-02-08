@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/tablogo.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/tablogo.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/tablogo.png">
+
+<title>Track Order</title>
+
+<style>
+:root{
+  --bg:#f6f3ee;
+  --glass:rgba(255,255,255,.65);
+  --accent:#8b6f4e;
+  --text:#3b3b3b;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Poppins,sans-serif;
+}
+html {
+  scroll-behavior: smooth;
+}
+/* ===== LOADER ===== */
+#loader{
+  position:fixed;
+  inset:0;
+  background:#f6f3ee;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  transition:opacity 1s ease, visibility 2s ease;
+}
+#loader.hide{
+  opacity:0;
+  visibility:hidden;
+}
+.loader-box{
+  position:relative;
+  width:90px;
+  height:90px;
+}
+.loader-box img{
+  width:50px;
+  position:absolute;
+  inset:0;
+  margin:auto;
+  z-index:2;
+}
+.loader-box span{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:3px solid transparent;
+  border-top:3px solid #b48b5a;
+  animation:spin 1.5s linear infinite;
+}
+@keyframes spin{
+  to{transform:rotate(360deg);}
+}
+
+body{
+  min-height:100vh;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  flex-direction:column;
+}
+
+/* ===== HEADER ===== */
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  padding: 0 70px;
+  z-index: 1000;
+}
+
+/* Logo */
+.logo {
+  position: absolute;
+  left: 20px;
+}
+
+.logo img {
+  height: 290px;
+  width: auto;
+}
+
+/* Nav links (PC) */
+nav {
+  display: flex;
+  gap: 50px;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1;
+}
+
+nav a:hover {
+  color: var(--accent);
+}
+
+/* Hamburger button hidden by default (PC) */
+.menu-btn {
+  display: none;
+  font-size: 26px;
+  cursor: pointer;
+  position: absolute;
+  right: 30px;
+  z-index: 1002;
+}
+
+/* ===== MAIN ===== */
+main{
+  flex:1;
+  display:flex;
+  align-items:flex-start; /* start from below header */
+  justify-content:center;
+  padding:120px 20px 40px; /* top padding to avoid header */
+  min-height:calc(100vh - 80px); /* full screen minus header */
+}
+
+/* ===== TRACK BOX ===== */
+.track-box{
+  background:#fff;
+  width:100%;
+  max-width:520px;
+  padding:35px;
+  border-radius:22px;
+  box-shadow:0 18px 45px rgba(0,0,0,.1);
+  transition:all .45s ease;
+  font-size:16px;
+}
+
+/* Expanded state */
+.track-box.expanded{
+  max-width:720px;
+  min-height:85vh;
+}
+
+/* Mobile expanded → full screen */
+@media(max-width:600px){
+  .track-box.expanded{
+    max-width:100%;
+    min-height:calc(100vh - 80px);
+    border-radius:0;
+  }
+  main{
+    padding-top:100px;
+  }
+}
+
+/* ===== INPUT & BUTTON ===== */
+.track-box h3{
+  text-align:center;
+  margin-bottom:12px;
+  font-size:24px;
+}
+
+.track-box p{
+  text-align:center;
+  font-size:16px;
+  opacity:.75;
+  margin-bottom:20px;
+}
+
+input{
+  width:100%;
+  padding:16px;
+  border-radius:14px;
+  border:1px solid #ddd;
+  margin-bottom:16px;
+  outline:none;
+  font-size:16px;
+}
+
+button{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:14px;
+  background:var(--accent);
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+
+/* ===== DETAILS ===== */
+.details{
+  margin-top:20px;
+}
+
+.details h3{
+  margin-bottom:20px;
+  font-size:22px;
+}
+
+.row{
+  margin-bottom:14px;
+  font-size:16px;
+}
+
+.label{
+  font-weight:600;
+  opacity:.75;
+}
+
+.status{
+  font-weight:600;
+  color:var(--accent);
+}
+
+.items{
+  margin-top:20px;
+}
+
+.items ul{
+  padding-left:20px;
+  margin-top:8px;
+}
+
+.items li{
+  margin-bottom:6px;
+  font-size:16px;
+}
+
+.total{
+  margin-top:16px;
+  font-weight:600;
+  font-size:18px;
+}
+
+.remarks{
+  margin-top:14px;
+  font-style:italic;
+  opacity:.8;
+  font-size:16px;
+}
+
+hr{
+  margin:22px 0;
+  opacity:.25;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background: #eee9e2;
+  padding: 50px 60px 30px;
+  font-family: "Poppins", sans-serif;
+  color: #2f2f2f;
+}
+
+/* Footer grid */
+.footer-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap:40px;
+  margin-bottom:40px;
+}
+
+/* Footer items */
+.footer-grid h4{
+  margin-bottom:14px;
+  font-weight:600;
+}
+.footer-grid p, .footer-grid a{
+  font-size:14px;
+  color:#555;
+  text-decoration:none;
+  margin-bottom:8px;
+}
+.footer-grid a i{
+  font-size:20px;
+  margin-right:12px;
+  color:#555;
+  transition:0.3s;
+}
+.footer-grid a:hover, .footer-grid a i:hover{
+  color: var(--accent);
+}
+
+/* Footer bottom text */
+.footer-bottom{
+  font-size:13px;
+  color:#777;
+  border-top:1px solid #ddd;
+  padding-top:10px;
+  text-align:center;
+}
+
+/* MOBILE RESPONSIVE FOOTER & NAV */
+@media(max-width:768px){
+  .menu-btn{display:block;}
+  .logo{
+    margin-left: -15px;
+  }
+  .logo img{
+    height: 200px;
+    margin-left: 2px;
+  }
+  nav{
+    position: fixed;
+    top:0;
+    right:-100%;
+    width:60%;
+    height:100vh;
+    background: #fffbf5;
+    flex-direction: column;
+    gap:25px;
+    padding:80px 30px;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.05);
+    transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index:1001;
+  }
+  nav.active{right:0;}
+  nav a{
+    font-size:20px;
+    color:#2f2f2f;
+    font-weight:500;
+  }
+  .footer-grid{
+    grid-template-columns:1fr;
+    gap:30px;
+    text-align:left;
+    margin-left: -40px;
+  }
+}
+
+/* END OF CSS */
+</style>
+</head>
+<body>
+  <div id="loader">
+  <div class="loader-box">
+    <img src="https://cdn-icons-png.flaticon.com/512/924/924514.png">
+    <span></span>
+  </div>
+</div>
+
+<header>
+  <a href="index.html" class="logo">
+    <img src="assets/logo.png" alt="Serene Café Logo">
+  </a>
+  <nav id="navLinks">
+    <a href="menu.html">Menu</a>
+    <a href="index.html">Home</a>
+    <a href="reservation.html">Reservation</a>
+    
+    
+  </nav>
+  <div class="menu-btn" id="menuToggle">☰</div>
+</header>
+
+<main>
+  <div class="track-box" id="trackBox">
+    <div id="inputView">
+      <h3>Track Your Order</h3>
+      <p>Enter your Order ID to continue</p>
+      <input type="text" id="orderId" placeholder="Order ID (e.g. ORDAB123)">
+      <button onclick="trackOrder()">Track Order</button>
+    </div>
+    <div class="details" id="detailsView"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-grid" id="footer-grid">
+    <div>
+      <h4>Serene Café</h4>
+      <p>A peaceful space for coffee lovers and food enthusiasts.</p>
+    </div>
+    <div>
+      <h4>Privacy</h4>
+      <a href="index.html">Privacy Policy</a>
+      <a href="index.html">Terms & Conditions</a>
+    </div>
+    <div>
+      <h4>Quick Links</h4>
+      <a href="menu.html">Menu</a>
+      <a href="reservation.html">Reservation</a>
+      <a href="#">Contact</a>
+    </div>
+    <div>
+      <h4>Location</h4>
+      <p>Putalisadak, Kathmandu</p>
+      <p>Open: 8 AM – 9 PM</p>
+    </div>
+    <div>
+      <h4>Contact Us</h4>
+      <a href="tel:+9779800000000">📞 +977 9800000000</a><br>
+      <a href="mailto:info@serenecafe.com">✉️ info@serenecafe.com</a><br>
+      <a href="https://wa.me/9779800000000" target="_blank">💬 WhatsApp Chat</a><br>
+      <a href="https://facebook.com/sumit.raj.aadhikari" target="_blank"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 Serene Café. All rights reserved.
+  </div>
+</footer>
+
+<script>
+function trackOrder(){
+  const id = document.getElementById("orderId").value.trim();
+  if(!id){ alert("Enter Order ID"); return; }
+
+  const box = document.getElementById("trackBox");
+  const detailsView = document.getElementById("detailsView");
+
+  detailsView.style.display="block";
+  detailsView.innerHTML="Getting order details...";
+
+  fetch(`https://prototype-xcoa.onrender.com/orders/${id}`)
+  .then(res=>res.json())
+  .then(data=>{
+    if(data.message==="Order not found"){
+      detailsView.innerHTML="Order not found Please check your Order ID.";
+      return;
+    }
+    box.classList.add("expanded"); // expand box
+    const itemsHTML = data.items.map(i=>`<li>${i.name} × ${i.quantity}</li>`).join("");
+    detailsView.innerHTML = `
+      <h3>Order Details</h3>
+      <div class="row"><span class="label">Name:</span> ${data.customerName}</div>
+      <div class="row"><span class="label">Contact:</span> ${data.phone}</div>
+      <div class="row"><span class="label">Address:</span> ${data.address}</div>
+      <div class="row"><span class="label">Status:</span> <span class="status">${data.status}</span></div>
+      <hr>
+      <div class="items"><span class="label">Items Ordered:</span><ul>${itemsHTML}</ul></div>
+      <div class="total">Total: NPR ${data.total}</div>
+      ${data.remarks ? `<div class="remarks">Remarks: ${data.remarks}</div>` : ""}
+    `;
+  })
+  .catch(err=>{
+    detailsView.innerHTML="Server error. Try again.";
+  });
+}
+/* Loader */
+window.addEventListener("load",()=>{document.getElementById("loader").classList.add("hide");});
+// Hamburger toggle
+const menuBtn = document.getElementById("menuToggle");
+const navLinks = document.getElementById("navLinks");
+menuToggle.addEventListener("click", () => {
+  navLinks.classList.toggle("active");
+  // toggle icon between hamburger and cross
+  menuToggle.innerText = navLinks.classList.contains("active") ? "✕" : "☰";
+});
+ // If user did NOT visit home page, redirect
+  if (!sessionStorage.getItem("visitedHome")) {
+    window.location.href = "index.html";
+  }
+</script>
+
+</body>
+</html>

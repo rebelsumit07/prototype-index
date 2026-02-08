@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="assets/tablogo.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/tablogo.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/tablogo.png">
+
+<title>Reservation</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Poppins", sans-serif;
+  scroll-behavior:smooth;
+}
+
+body{
+  background:#cbc2a7;
+  color:#2f2f2f;
+  overflow-x:hidden;
+}
+
+/* ===== LOADER ===== */
+#loader{
+  position:fixed;
+  inset:0;
+  background:#f6f3ee;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  transition:opacity 1s ease, visibility 2s ease;
+}
+#loader.hide{
+  opacity:0;
+  visibility:hidden;
+}
+.loader-box{
+  position:relative;
+  width:90px;
+  height:90px;
+}
+.loader-box img{
+  width:50px;
+  position:absolute;
+  inset:0;
+  margin:auto;
+  z-index:2;
+}
+.loader-box span{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:3px solid transparent;
+  border-top:3px solid #b48b5a;
+  animation:spin 1.5s linear infinite;
+}
+@keyframes spin{
+  to{transform:rotate(360deg);}
+}
+
+/* ===== HEADER ===== */
+header{
+  position:fixed;
+  top:0;
+  width:100%;
+  height:80px;
+  padding:0 70px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  backdrop-filter:blur(14px);
+  background:rgba(246,243,238,0.65);
+  z-index:1000;
+}
+
+/* LOGO */
+header .logo img{
+  height:290px; /* realistic café logo */
+  width:auto;
+  object-fit:contain;
+}
+.logo{
+  margin-left: -50px;
+}
+/* NAVBAR */
+nav{
+  display:flex;
+  gap:66px;
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+}
+nav a{
+  text-decoration:none;
+  color:#000;
+  font-size:14px;
+}
+nav a:hover{color:#b48b5a;}
+
+/* RIGHT SIDE: hotline + mobile menu */
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+.hotline{
+  text-decoration:none;
+  color:#2f2f2f;
+  font-size:14px;
+}
+.hotline:hover{color:#b48b5a;}
+
+.menu-btn{
+  display:none;
+  font-size:26px;
+  cursor:pointer;
+  z-index:1001;
+}
+
+/* MOBILE MENU */
+.mobile-menu{
+  position:fixed;
+  top:0;
+  right:-100%;
+  width:60%;
+  height:100vh;
+  background:#fffbf5;
+  padding:80px 30px;
+  transition:.4s cubic-bezier(0.16,1,0.3,1);
+  display:flex;
+  flex-direction:column;
+  gap:25px;
+  z-index:999;
+}
+.mobile-menu a{
+  text-decoration:none;
+  font-size:20px;
+  color:#2f2f2f;
+  font-weight:500;
+}
+
+/* ===== RESERVATION ===== */
+.reservation-section{
+  padding:140px 80px;
+}
+
+.reservation-header{
+  text-align:center;
+  margin-bottom:70px;
+}
+.reservation-header h1{
+  font-size:38px;
+  margin-bottom:10px;
+}
+.reservation-header p{
+  font-size:14px;
+  color:#777;
+}
+
+.reservation-wrapper{
+  display:flex;
+  gap:60px;
+}
+
+/* ===== GALLERY ===== */
+.table-gallery{
+  width:50%;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px;
+}
+
+.table-card{
+  background:#fff;
+  border-radius:12px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.3s ease;
+}
+
+.table-card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
+
+.table-card div{
+  padding:14px;
+}
+
+.table-card h4{
+  font-size:15px;
+  font-weight:500;
+}
+.table-card p{
+  font-size:13px;
+  color:#777;
+}
+
+.table-card:hover{
+  transform:translateY(-4px);
+}
+
+/* ===== FORM ===== */
+.reservation-form{
+  width:50%;
+  background:#fff;
+  padding:42px;
+  border-radius:16px;
+}
+
+.form-group{
+  margin-bottom:22px;
+}
+.form-group label{
+  font-size:13px;
+  display:block;
+  margin-bottom:6px;
+  color:#555;
+}
+
+.form-group input,
+.form-group textarea{
+  width:100%;
+  padding:14px 16px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  font-size:14px;
+  background:#fafafa;
+}
+
+.form-group input:focus,
+.form-group textarea:focus{
+  outline:none;
+  border-color:#b48b5a;
+  background:#fff;
+}
+
+.form-row{
+  display:flex;
+  gap:16px;
+}
+
+textarea{
+  resize:none;
+  height:90px;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:30px;
+  background:#b48b5a;
+  color:#fff;
+  font-size:15px;
+  cursor:pointer;
+}
+button:hover{background:#a1794d;}
+
+.form-note{
+  margin-top:14px;
+  font-size:13px;
+  color:#777;
+  text-align:center;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background: #eee9e2;
+  padding: 50px 60px 30px;
+  font-family: "Poppins", sans-serif;
+  color: #2f2f2f;
+}
+
+/* Footer grid */
+.footer-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap:40px;
+  margin-bottom:40px;
+}
+
+/* Footer items */
+.footer-grid h4{
+  margin-bottom:14px;
+  font-weight:600;
+}
+.footer-grid p, .footer-grid a{
+  font-size:14px;
+  color:#555;
+  text-decoration:none;
+  margin-bottom:8px;
+}
+.footer-grid a i{
+  font-size:20px;
+  margin-right:12px;
+  color:#555;
+  transition:0.3s;
+}
+.footer-grid a:hover, .footer-grid a i:hover{
+  color: var(--accent);
+}
+
+/* Footer bottom text */
+.footer-bottom{
+  font-size:13px;
+  color:#777;
+  border-top:1px solid #ddd;
+  padding-top:10px;
+  text-align:center;
+}
+.quick-date-btn{  /* New CSS for quick date buttons */
+  padding:6px 12px;
+  font-size:13px;
+  border:1px solid #ddd;
+  border-radius:6px;
+  background:#fafafa;
+  cursor:pointer;
+  color:#2f2f2f;
+}
+.quick-date-btn:hover{
+  background:#f0e8d0;
+  border-color:#b48b5a;
+}
+
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  header{padding:0 17px;}
+  nav,.hotline{display:none;}
+  .menu-btn{display:block;margin-left:auto;}
+
+  .reservation-section{padding:120px 20px;}
+  .reservation-wrapper{flex-direction:column;}
+  .table-gallery,.reservation-form{width:100%;}
+  .form-row{flex-direction:column;}
+}
+footer {
+    padding: 50px 20px 30px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr; /* single column on mobile */
+    gap: 30px;
+    text-align: left;
+  }
+
+  .footer-grid div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer-bottom {
+    text-align: left;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+  }
+
+
+/* ===== MODAL ===== */
+#reservationModal{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2000;
+}
+#reservationModal .modal-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+}
+#reservationModal .modal-content{
+  position:relative;
+  background:#fff;
+  padding:30px 40px;
+  border-radius:12px;
+  text-align:center;
+  max-width:400px;
+  z-index:2;
+  font-size:15px;
+  color:#2f2f2f;
+}
+#reservationModal button{
+  margin-top:20px;
+  padding:10px 20px;
+  background:#b48b5a;
+  border:none;
+  color:#fff;
+  border-radius:30px;
+  cursor:pointer;
+  font-size:14px;
+}
+#reservationModal button:hover{
+  background:#a1794d;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-box">
+    <img src="https://cdn-icons-png.flaticon.com/512/924/924514.png">
+    <span></span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <a href="index.html" class="logo">
+    <img src="assets/logo.png" alt="Serene Cafe Logo">
+  </a>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="menu.html">Menu</a>
+    <a href="#footer-grid">Location</a>
+    
+   <a href="trackorder.html">Track order</a>
+    
+  </nav>
+
+  <div class="header-right">
+    <a class="hotline" href="tel:+9779800000000">📞 +977 9800000000</a>
+    <div class="menu-btn" id="menuToggle">☰</div>
+  </div>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="menu.html">Menu</a>
+    <a href="#footer-grid">Location</a>
+    <a href="trackorder.html">Track order</a>
+    
+    <a href="tel:+9779800000000">📞 Call Us</a>
+  </div>
+</header>
+
+<!-- RESERVATION -->
+<section class="reservation-section">
+  <div class="reservation-header">
+    <h1>Reserve a Table</h1>
+    <p>Instant confirmation · No advance payment required <br>Please Reserve before an hour or call us if u are late</p>
+  </div>
+
+  <div class="reservation-wrapper">
+
+    <div class="table-gallery">
+      <div class="table-card" data-table="4 Seater Table">
+        <img src="tables/4.jpg">
+        <div><h4>4 Seater Table</h4><p>Ideal for small groups</p></div>
+      </div>
+      <div class="table-card" data-table="Private Cabin">
+        <img src="tables/private.jpg">
+        <div><h4>Private Cabin</h4><p>Quiet & cozy</p></div>
+      </div>
+      <div class="table-card" data-table="Outdoor Seating">
+        <img src="tables/outdoor.avif">
+        <div><h4>Outdoor Seating</h4><p>Open-air vibe</p></div>
+      </div>
+      <div class="table-card" data-table="Family Table">
+        <img src="tables/family.jpg">
+        <div><h4>Family Table</h4><p>Spacious seating</p></div>
+      </div>
+    </div>
+
+    <form class="reservation-form" id="reservationForm">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" name="name" placeholder="Enter your full name" required>
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" name="phone" placeholder="Enter your phone number" required>
+      </div>
+      <div class="form-row">
+  <div class="form-group" style="flex:1; position:relative;">
+    <label>Date</label>
+    <input type="date" name="date" id="resDate" required>
+    <div style="margin-top:5px; display:flex; gap:8px;">
+      <button type="button" class="quick-date-btn" data-offset="0">Today</button>
+      <button type="button" class="quick-date-btn" data-offset="1">Tomorrow</button>
+    </div>
+  </div>
+  <div class="form-group" style="flex:1;">
+    <label>Time</label>
+    <input type="time" name="time" required>
+  </div>
+</div>
+
+      <div class="form-group">
+        <label>Guests</label>
+        <input type="number" name="guests" min="1" placeholder="How many guests?" required>
+      </div>
+      <div class="form-group">
+        <label>Table Preference / Message</label>
+        <textarea name="message" placeholder="Enter table type or special request"></textarea>
+      </div>
+      <button type="submit">Confirm Reservation</button>
+      <p class="form-note">Instant confirmation · No advance payment required</p>
+    </form>
+
+  </div>
+</section>
+<div id="reservationModal" style="display:none;">
+  <div class="modal-overlay"></div>
+  <div class="modal-content">
+    <p id="modalMessage"></p>
+    <button id="modalClose">OK</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div id="footer-grid">
+    <div class="footer-grid">
+      <div><h4>Serene Café</h4><p>A peaceful space for coffee lovers and food enthusiasts.</p></div>
+      <div><h4>Privacy</h4><a href="#">Privacy Policy</a><a href="#">Terms & Conditions</a></div>
+      <div><h4>Quick Links</h4><a href="#">Menu</a><a href="#">Reservation</a><a href="#">Contact</a></div>
+      <div><h4>Location</h4><p>Putalisadak, Kathmandu</p><p>Open: 8 AM – 9 PM</p></div>
+      <div><h4>Contact Us</h4>
+        <a href="tel:+9779800000000">📞 +977 9800000000</a>
+        <a href="mailto:info@serenecafe.com">✉️ info@serenecafe.com</a>
+        <a href="https://wa.me/9779800000000" target="_blank">💬 WhatsApp Chat</a>
+        <a href="#">Facebook</a><a href="#">Instagram</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Serene Café. All rights reserved.</div>
+</footer>
+<script>
+
+/* Loader */
+window.addEventListener("load",()=>{document.getElementById("loader").classList.add("hide");});
+
+/* Mobile menu */
+const toggle=document.getElementById("menuToggle");
+const menu=document.getElementById("mobileMenu");
+toggle.onclick=()=>menu.style.right=menu.style.right==="0px"?"-100%":"0";
+
+/* Table select */
+document.querySelectorAll(".table-card").forEach(card=>{
+  card.onclick=()=>document.querySelector("textarea[name='message']").value=card.dataset.table;
+});
+
+/* Modal Elements */
+const modal=document.getElementById("reservationModal");
+const modalMessage=document.getElementById("modalMessage");
+const modalClose=document.getElementById("modalClose");
+modalClose.onclick=()=>modal.style.display="none";
+
+document.querySelectorAll(".quick-date-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const offset = parseInt(btn.dataset.offset); // 0 for today, 1 for tomorrow
+    const dateField = document.getElementById("resDate");
+    const date = new Date();
+    date.setDate(date.getDate() + offset);
+
+    // Format date as YYYY-MM-DD
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    dateField.value = `${y}-${m}-${d}`;
+  });
+});
+
+
+/* Backend Submission */
+document.getElementById("reservationForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const f=e.target;
+  const data={
+    name:f.name.value,
+    phone:f.phone.value,
+    date:f.date.value,
+    time:f.time.value,
+    guests:f.guests.value,
+    message:f.message.value
+  };
+
+  try {
+    const res=await fetch("https://prototype-xcoa.onrender.com/reservations",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(data)
+    });
+
+    if(res.ok){
+      modalMessage.textContent = "✅ Reservation confirmed! We will call you shortly.";
+      modal.style.display="flex";
+      f.reset();
+    } else {
+      modalMessage.textContent = "❌ Something went wrong. Please call +9779800000000 for reservation.";
+      modal.style.display="flex";
+    }
+  } catch(err){
+    modalMessage.textContent = "❌ Something went wrong. Please call +9779800000000 for reservation.";
+    modal.style.display="flex";
+  }
+});
+ // If user did NOT visit home page, redirect
+  if (!sessionStorage.getItem("visitedHome")) {
+    window.location.href = "index.html";
+  }
+</script>
+
+</body>
+</html>
